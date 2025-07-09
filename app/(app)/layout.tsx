@@ -51,10 +51,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         return <div>Loading...</div>;
     }
 
-    if (!isSignedIn) {
-        return <div>Sign in to view this page</div>;
-    }
-
 
 
     return (

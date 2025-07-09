@@ -50,7 +50,7 @@ const Header = ({ user, onLogout }: HeaderProps) => {
 
                     {/* Right side - Auth buttons or Profile */}
                     <div className="flex items-center space-x-4">
-                        {!user ? (
+                        {!user?.emailAddress ? (
                             <>
                                 {/* Login Button */}
                                 <button
@@ -84,24 +84,24 @@ const Header = ({ user, onLogout }: HeaderProps) => {
                                                 alt={user.name || "User"}
                                             />
                                         )}
-                                        <span className="text-sm font-medium hidden sm:block">{user.name}</span>
+                                        <span className="text-sm font-medium hidden sm:block max-w-[120px] truncate">{user.name}</span>
                                         <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? "rotate-180" : ""}`} />
                                     </button>
 
                                     {/* Dropdown Menu */}
                                     {showDropdown && (
-                                        <div className="absolute right-0 mt-2 w-56 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-800 py-1">
+                                        <div className="absolute right-0 mt-2 w-64 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-800 py-1 z-50">
                                             {/* User Info */}
                                             <div className="px-4 py-3 border-b border-gray-800">
                                                 <div className="flex items-center space-x-3">
                                                     <img
-                                                        className="h-10 w-10 rounded-full object-cover"
+                                                        className="h-10 w-10 rounded-full object-cover flex-shrink-0"
                                                         src={user.avatar}
                                                         alt={user.name}
                                                     />
-                                                    <div>
-                                                        <p className="text-sm font-medium text-white">{user.name}</p>
-                                                        <p className="text-xs text-gray-400">{user.emailAddress}</p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                                                        <p className="text-xs text-gray-400 truncate break-all" title={user.emailAddress}>{user.emailAddress}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -111,7 +111,7 @@ const Header = ({ user, onLogout }: HeaderProps) => {
                                                 <button
                                                     onClick={() => {
                                                         setShowDropdown(false);
-                                                        router.push("/profile");
+                                                        console.log("Profile clicked");
                                                     }}
                                                     className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 w-full text-left transition-colors duration-200"
                                                 >
