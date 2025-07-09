@@ -5,13 +5,17 @@ import { ArrowLeft, Mail } from "lucide-react";
 import BottomGradient from "./ui/BottomGradient";
 import Link from "next/link";
 import Toast from "./Toast";
+import { ToastState } from "@/types";
 
 
 interface VerifyFormProps {
-  handleVerification: (code: string) => Promise<void>;
-  email?: string;
-  veficationError?: string;
-  isLoading?: boolean;
+    handleVerification: (code: string) => Promise<void>;
+    email?: string;
+    veficationError?: string;
+    isLoading?: boolean;
+    toast?: ToastState;
+    setToast: (toast: ToastState) => void;
+    resendCode: () => void;
 }
 
 
@@ -21,7 +25,10 @@ function VerifyForm(
         handleVerification,
         email,
         veficationError,
-        isLoading
+        isLoading,
+        toast,
+        setToast,
+        resendCode,
     }: VerifyFormProps
 ) {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -131,8 +138,8 @@ function VerifyForm(
         setError("");
         
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await resendCode()
             console.log("Verification code resent to:", email);
         } catch (error) {
             setError("Failed to resend code. Please try again.");
@@ -152,13 +159,18 @@ function VerifyForm(
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
-            {/* Custom Toast 
-            <Toast 
-                show={toast.show} 
-                message={toast.message} 
-                type={toast.type}
-                onClose={() => setToast({ ...toast, show: false })}
-            /> */}
+            {/* Custom Toast  */}
+            {toast && toast?.show && (
+                <Toast 
+                    show={toast?.show} 
+                    message={toast?.message} 
+                    type={toast?.type}
+                    onClose={() => {
+                        if (!toast) return;
+                        setToast({ show: false, message: "", type: "success" })
+                    }}
+                /> 
+            )}
             <div className="w-full max-w-md">
                 {/* Main Verification Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">

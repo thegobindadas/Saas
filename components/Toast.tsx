@@ -2,24 +2,22 @@
 
 import { useEffect } from "react";
 import { CheckCircle, X } from "lucide-react";
+import { ToastState } from "@/types";
 
 
-type ToastProps = {
-    show: boolean;
-    message: string;
-    type?: "success" | "error";
+type ToastProps = ToastState & {
     onClose: () => void;
 };
 
 
 
-const Toast = ({ show, message, type = "success", onClose } : ToastProps) => {
-
+const Toast = ({ show, message, type = "success", onClose }: ToastProps) => {
+    
     useEffect(() => {
         if (show) {
             const timer = setTimeout(() => {
                 onClose();
-            }, 4000); // Auto-dismiss after 4 seconds
+            }, 4000); // Auto-dismiss after 3 seconds
             return () => clearTimeout(timer);
         }
     }, [show, onClose]);
@@ -30,7 +28,7 @@ const Toast = ({ show, message, type = "success", onClose } : ToastProps) => {
 
 
     return (
-        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
+        <div className="fixed top-4 right-4 z-50 transform transition-all duration-300 ease-in-out">
             <div className={`
                 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-sm border max-w-sm
                 ${type === "success" 

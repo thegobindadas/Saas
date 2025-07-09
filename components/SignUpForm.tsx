@@ -4,18 +4,29 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import BottomGradient from "./ui/BottomGradient";
 import Link from "next/link";
-import { UserSignUpData } from "@/types";
+import Toast from "./Toast";
+import { UserSignUpData, ToastState } from "@/types";
 
 
 interface SignUpFormProps {
     signUpWithEmail: (formData: UserSignUpData) => void;
     signupError: string;
     loading?: boolean;
+    toast?: ToastState;
+    setToast: (toast: ToastState) => void;
 }
 
 
 
-export default function SignupForm({signUpWithEmail, signupError, loading}: SignUpFormProps) {
+export default function SignupForm(
+    {
+        signUpWithEmail, 
+        signupError, 
+        loading, 
+        toast, 
+        setToast
+    } : SignUpFormProps
+) {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [formData, setFormData] = useState<UserSignUpData>({
         firstName: "",
@@ -51,13 +62,15 @@ export default function SignupForm({signUpWithEmail, signupError, loading}: Sign
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
-            {/* Custom Toast 
-            <Toast 
-                show={toast.show} 
-                message={toast.message} 
-                type={toast.type}
-                onClose={() => setToast({ ...toast, show: false })}
-            /> */}
+            {/* Custom Toast */}
+            {toast && toast?.show && (
+                <Toast 
+                    show={toast?.show} 
+                    message={toast?.message} 
+                    type={toast?.type}
+                    onClose={() => setToast({ show: false, message: "", type: "success" })}
+                /> 
+            )}
             <div className="w-full max-w-lg">
                 {/* Main Signup Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">
@@ -153,16 +166,23 @@ export default function SignupForm({signUpWithEmail, signupError, loading}: Sign
                         </div>
 
                         {/* Captcha */}
-                        <div id="clerk-captcha"></div>
+                        <div id="clerk-captcha" className="hidden"></div>
 
                         {/* Sign Up Button */}
                         <button
                             type="button"
                             disabled={loading}
                             onClick={handleSubmit}
-                            className="relative group/btn w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                            className="relative group/btn w-full h-12 bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900"
                         >
-                            {loading ? "Creating Account..." : "Create Account"}
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Creating Account...
+                                </span>
+                                ) : (
+                                "Create Account"
+                            )}
                             <BottomGradient />
                         </button>
 

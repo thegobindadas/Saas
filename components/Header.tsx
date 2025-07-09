@@ -43,7 +43,7 @@ const Header = ({ user, onLogout }: HeaderProps) => {
                                 <span className="text-white font-bold text-xl">V</span>
                             </div>
                             <div className="ml-3">
-                                <h1 className="text-xl font-bold text-white">VideoHub</h1>
+                                <h1 className="text-xl font-bold text-white">MediaMorph</h1>
                             </div>
                         </div>
                     </div>

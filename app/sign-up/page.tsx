@@ -5,7 +5,7 @@ import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import SignupForm from "@/components/SignUpForm";
 import VerifyForm from "@/components/VerifyForm";
-import { UserSignUpData } from "@/types";
+import { UserSignUpData, ToastState } from "@/types";
 
 
 
@@ -18,7 +18,7 @@ function SignUpPage() {
     const [verifying, setVerifying] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false)
     const [error , setError] = useState<string>("");
-    const [toast, setToast] = useState({ show: false, message: "", type: "success" });
+    const [toast, setToast] = useState<ToastState>({ show: false, message: "", type: "success" });
 
 
     const signUpWithEmail = async (
@@ -29,8 +29,13 @@ function SignUpPage() {
             return;
         }
 
-        setLoading(true)
+        setLoading(true);
         setError("");
+        setToast({ 
+            show: false, 
+            message: "", 
+            type: "success" 
+        });
 
         try {
             if (!formData.firstName || !formData.lastName || !formData.emailAddress || !formData.password) {
@@ -56,6 +61,12 @@ function SignUpPage() {
             // change the UI to our pending section.
             setVerifying(true);
 
+            setToast({ 
+                show: true, 
+                message: "A verification code sent to your email. Please check your inbox.", 
+                type: "success" 
+            });
+
         } catch (err: any) {
             setError(err.errors[0].message || "Something went wrong. Please try again.");
         } finally {
@@ -68,8 +79,14 @@ function SignUpPage() {
 
         if (!isLoaded && !signUp) return;
 
-        setLoading(true)
+        setLoading(true);
         setError("");
+        setToast({ 
+            show: false, 
+            message: "", 
+            type: "success" 
+        });
+        
 
         try {
 
@@ -85,7 +102,14 @@ function SignUpPage() {
 
             if (signUpAttempt.status === "complete") {
                 await setActive({ session: signUpAttempt.createdSessionId })
-                router.push("/")
+
+                setToast({ 
+                    show: true, 
+                    message: "Email verified successfully! Redirecting...", 
+                    type: "success" 
+                });
+
+                router.push("/home")
             }
 
         } catch (err: any) {
@@ -115,6 +139,8 @@ function SignUpPage() {
                     signUpWithEmail={signUpWithEmail} 
                     signupError={error}
                     loading={loading}
+                    toast={toast}
+                    setToast={setToast}
                 />) 
                 :
                 (<VerifyForm 
@@ -122,6 +148,9 @@ function SignUpPage() {
                     email={emailAddress}
                     veficationError={error}
                     isLoading={loading}
+                    toast={toast}
+                    setToast={setToast}
+                    resendCode={handleResendCode}
                 />)
             }
         </>

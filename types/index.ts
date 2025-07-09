@@ -30,3 +30,10 @@ export interface SidebarItem {
     label: string;
     icon: LucideIcon;
 }
+
+
+export type ToastState = {
+  show: boolean;
+  message: string;
+  type?: "success" | "error";
+};

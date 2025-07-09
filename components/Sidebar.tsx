@@ -32,7 +32,7 @@ const Sidebar = ({ user, menuItems }: sidebarProps) => {
                             <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-sm">V</span>
                             </div>
-                            <span className="ml-2 text-white font-bold text-lg">VideoHub</span>
+                            <span className="ml-2 text-white font-bold text-lg">MediaMorph</span>
                         </div>
                         <button
                             onClick={() => setIsMobileOpen(false)}
@@ -81,7 +81,7 @@ const Sidebar = ({ user, menuItems }: sidebarProps) => {
             {!user && (
                 <div className="p-4 border-t border-gray-800">
                     <div className="bg-gray-800 bg-opacity-50 rounded-lg p-4">
-                        <h4 className="text-white font-medium mb-2">Join VideoHub</h4>
+                        <h4 className="text-white font-medium mb-2">Join MediaMorph</h4>
                         <p className="text-gray-400 text-sm mb-3">
                             Sign up to upload videos and share with friends
                         </p>
