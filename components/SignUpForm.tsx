@@ -4,17 +4,11 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import BottomGradient from "./ui/BottomGradient";
 import Link from "next/link";
+import { UserSignUpData } from "@/types";
 
-
-interface SignUpFormData {
-    firstName: string;
-    lastName: string;
-    emailAddress: string;
-    password: string;
-}
 
 interface SignUpFormProps {
-    signUpWithEmail: (formData: SignUpFormData) => void;
+    signUpWithEmail: (formData: UserSignUpData) => void;
     signupError: string;
     loading?: boolean;
 }
@@ -22,8 +16,8 @@ interface SignUpFormProps {
 
 
 export default function SignupForm({signUpWithEmail, signupError, loading}: SignUpFormProps) {
-    const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [formData, setFormData] = useState<UserSignUpData>({
         firstName: "",
         lastName: "",
         emailAddress: "",
@@ -57,6 +51,13 @@ export default function SignupForm({signUpWithEmail, signupError, loading}: Sign
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
+            {/* Custom Toast 
+            <Toast 
+                show={toast.show} 
+                message={toast.message} 
+                type={toast.type}
+                onClose={() => setToast({ ...toast, show: false })}
+            /> */}
             <div className="w-full max-w-lg">
                 {/* Main Signup Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">
@@ -150,6 +151,9 @@ export default function SignupForm({signUpWithEmail, signupError, loading}: Sign
                                 </button>
                             </div>
                         </div>
+
+                        {/* Captcha */}
+                        <div id="clerk-captcha"></div>
 
                         {/* Sign Up Button */}
                         <button

@@ -5,6 +5,7 @@ import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import SignupForm from "@/components/SignUpForm";
 import VerifyForm from "@/components/VerifyForm";
+import { UserSignUpData } from "@/types";
 
 
 
@@ -13,21 +14,15 @@ function SignUpPage() {
     const router = useRouter();
     const { isLoaded, setActive, signUp } = useSignUp();
 
-    const [verifying, setVerifying] = useState(false);
-    const [loading, setLoading] = useState(false)
-    const [signupError, setSignupError] = useState("");
-    const [veficationError, setVerificationError] = useState("");
+    const [emailAddress, setEmailAddress] = useState<string>("");
+    const [verifying, setVerifying] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false)
+    const [error , setError] = useState<string>("");
+    const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
 
-    
     const signUpWithEmail = async (
-        formData: 
-        {
-            firstName: string;
-            lastName: string;
-            emailAddress: string;
-            password: string;
-        }
+        formData: UserSignUpData
     ) => {
         
         if (!isLoaded && !signUp) {
@@ -35,27 +30,34 @@ function SignUpPage() {
         }
 
         setLoading(true)
-        setSignupError("");
+        setError("");
 
         try {
             if (!formData.firstName || !formData.lastName || !formData.emailAddress || !formData.password) {
-                setSignupError("Please fill in all required fields.");
+                setError("Please fill in all required fields.");
                 return;
             }
 
 
-            const signupRes = await signUp.create(formData);
-            console.log(signupRes)
+            await signUp.create({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                emailAddress: formData.emailAddress,
+                password: formData.password,
+            });
+            
 
             // send the email.
-            await signUp.prepareEmailAddressVerification({strategy: "email_code"});
+            await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
-            console.log("After send otp:- ", signUp)
+            // set the email address
+            setEmailAddress(signUp?.emailAddress || formData?.emailAddress);
+
             // change the UI to our pending section.
             setVerifying(true);
 
         } catch (err: any) {
-            setSignupError(err.errors[0].message);
+            setError(err.errors[0].message || "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -67,7 +69,7 @@ function SignUpPage() {
         if (!isLoaded && !signUp) return;
 
         setLoading(true)
-        setVerificationError("");
+        setError("");
 
         try {
 
@@ -78,7 +80,7 @@ function SignUpPage() {
             
             if (signUpAttempt.status !== "complete") {
                 console.error(JSON.stringify(signUpAttempt, null, 2));
-                setVerificationError(JSON.stringify(signUpAttempt, null, 2))
+                setError(JSON.stringify(signUpAttempt, null, 2))
             }
 
             if (signUpAttempt.status === "complete") {
@@ -87,11 +89,22 @@ function SignUpPage() {
             }
 
         } catch (err: any) {
-            setVerificationError(err.errors[0].message);
+            setError(err.errors[0].message || "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     }
+
+
+    const handleResendCode = async () => {
+        if (!isLoaded) return;
+
+        try {
+            await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        } catch (err: any) {
+            setError(err.errors[0].message || "Failed to resend code. Please try again.");
+        }
+    };
 
 
 
@@ -100,14 +113,14 @@ function SignUpPage() {
             {!verifying ?
                 (<SignupForm 
                     signUpWithEmail={signUpWithEmail} 
-                    signupError={signupError} 
+                    signupError={error}
                     loading={loading}
                 />) 
                 :
                 (<VerifyForm 
                     handleVerification={handleVerification}
-                    email={signUp?.emailAddress || "your@email.com"}
-                    veficationError={veficationError}
+                    email={emailAddress}
+                    veficationError={error}
                     isLoading={loading}
                 />)
             }

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Mail } from "lucide-react";
 import BottomGradient from "./ui/BottomGradient";
 import Link from "next/link";
+import Toast from "./Toast";
 
 
 interface VerifyFormProps {
@@ -24,9 +25,9 @@ function VerifyForm(
     }: VerifyFormProps
 ) {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-    const [error, setError] = useState("");
-    const [resendCountdown, setResendCountdown] = useState(60); // Start with 60 seconds countdown
-    const [canResend, setCanResend] = useState(false); // Initially disabled
+    const [error, setError] = useState<string>("");
+    const [resendCountdown, setResendCountdown] = useState<number>(60); // Start with 60 seconds countdown
+    const [canResend, setCanResend] = useState<boolean>(false); // Initially disabled
     
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -151,6 +152,13 @@ function VerifyForm(
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
+            {/* Custom Toast 
+            <Toast 
+                show={toast.show} 
+                message={toast.message} 
+                type={toast.type}
+                onClose={() => setToast({ ...toast, show: false })}
+            /> */}
             <div className="w-full max-w-md">
                 {/* Main Verification Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">
