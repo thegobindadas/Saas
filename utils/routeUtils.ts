@@ -5,6 +5,7 @@ export const PUBLIC_ROUTES = [
   "/home",
   "/sign-in",
   "/sign-up",
+  "/forgot-password",
   "/api/webhook/register",
 ];
 

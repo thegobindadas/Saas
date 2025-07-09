@@ -37,18 +37,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (user) {
             setUserData({
-                name: `${user.firstName} ${user.lastName}`,
+                name: user.fullName || `${user.firstName} ${user.lastName}` || "User",
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
-                emailAddress: user.primaryEmailAddressId || "",
-                avatar: "https://unsplash.com/photos/a-yellow-sign-with-a-smiley-face-on-it-P4RcBNbRl60",
+                emailAddress: user?.primaryEmailAddress?.emailAddress || "",
+                avatar: user.imageUrl || "https://unsplash.com/photos/a-yellow-sign-with-a-smiley-face-on-it-P4RcBNbRl60",
             })
         }
-        console.log("isLoaded: ", isLoaded);
-        console.log("isSignedIn: ", isSignedIn);
-        console.log("user: ", user);
-        console.log("User data: ", userData);
-    }, [])
+    }, [user, isLoaded, isSignedIn]);
     
 
     if (!isLoaded) {

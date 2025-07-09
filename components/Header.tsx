@@ -19,7 +19,7 @@ const Header = ({ user, onLogout }: HeaderProps) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const router = useRouter();
     
-    
+
     const handleLogout = () => {
         setShowDropdown(false);
         onLogout();
@@ -77,13 +77,15 @@ const Header = ({ user, onLogout }: HeaderProps) => {
                                         onClick={toggleDropdown}
                                         className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-lg p-2"
                                     >
-                                        <img
-                                            className="h-8 w-8 rounded-full object-cover border-2 border-gray-600"
-                                            src={user.avatar}
-                                            alt={user.name}
-                                        />
+                                        {user.avatar && (
+                                            <img
+                                                className="h-8 w-8 rounded-full object-cover border-2 border-gray-600"
+                                                src={user.avatar}
+                                                alt={user.name || "User"}
+                                            />
+                                        )}
                                         <span className="text-sm font-medium hidden sm:block">{user.name}</span>
-                                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? "rotate-180" : ""}`} />
                                     </button>
 
                                     {/* Dropdown Menu */}
