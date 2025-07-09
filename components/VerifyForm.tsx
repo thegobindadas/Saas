@@ -160,7 +160,7 @@ function VerifyForm(
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
             {/* Custom Toast  */}
-            {toast && toast?.show && (
+            {toast?.show && (
                 <Toast 
                     show={toast?.show} 
                     message={toast?.message} 

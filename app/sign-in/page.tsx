@@ -6,6 +6,8 @@ import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import BottomGradient from "@/components/ui/BottomGradient";
 import Link from "next/link";
+import Toast from "@/components/Toast";
+import { ToastState } from "@/types";
 
 
 
@@ -19,6 +21,7 @@ function SignInPage() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [showPassword, setShowPassword] = useState(false);
+    const [toast, setToast] = useState<ToastState>({ show: false, message: "", type: "success" });
 
 
     if (!isLoaded) {
@@ -38,6 +41,11 @@ function SignInPage() {
 
         setIsLoading(true);
         setError("");
+        setToast({ 
+            show: false, 
+            message: "", 
+            type: "success" 
+        });
 
         try {
             const signInAttempt = await signIn.create({
@@ -50,6 +58,12 @@ function SignInPage() {
             }
 
             if (signInAttempt.status === "complete") {
+                setToast({ 
+                    show: true, 
+                    message: "Login successful!", 
+                    type: "success" 
+                });
+                
                 await setActive({ session: signInAttempt.createdSessionId })
                 router.push("/home")
             }
@@ -66,6 +80,13 @@ function SignInPage() {
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
+            {/* Custom Toast */}
+            <Toast 
+                show={toast?.show} 
+                message={toast?.message} 
+                type={toast?.type}
+                onClose={() => setToast({ show: false, message: "", type: "success" })}
+            /> 
             <div className="max-w-md w-full">
                 {/* Main Login Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">
