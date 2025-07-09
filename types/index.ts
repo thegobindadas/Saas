@@ -2,6 +2,11 @@ import { LucideIcon } from "lucide-react";
 
 
 
+export type PublicMetadata = {
+  role?: string;
+};
+
+
 export interface UserSignUpData {
     firstName: string;
     lastName: string;

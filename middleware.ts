@@ -1,71 +1,67 @@
-import { clerkMiddleware, clerkClient } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-
-
-const createRouteMatcher = (routes: string[]) => {
-  return (pathname: string) => {
-    return routes.includes(pathname);
-  };
-};
-
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-up",
-  "/sign-in",
-  "/api/webhook/register",
-])
+import { isPublicRoute, REDIRECTS } from "./utils/routeUtils";
+import { PublicMetadata } from "./types";
 
 
 
 export default clerkMiddleware(async (auth, req) => {
+  const { userId, sessionClaims } = await auth();
+  const url = new URL(req.url);
+  const pathname = url.pathname;
+
   try {
+    // ✅ 0. Skip middleware for the webhook endpoint (important for server-to-server calls)
+    if (pathname === "/api/webhook/register") {
+      return NextResponse.next();
+    }
 
-    const { userId } = await auth()
-    const url = new URL(req.url);
-    const pathname = url.pathname;
 
-  
-    // ❌ If not authenticated, redirect to sign in page
+    // 1️⃣ Not logged in & route is protected → Redirect to /sign-up
     if (!userId && !isPublicRoute(pathname)) {
-      return NextResponse.redirect(new URL("/sign-in", req.url));
+      return NextResponse.redirect(new URL(REDIRECTS.UNAUTHENTICATED, req.url));
     }
 
 
+    // 2️⃣ Logged in but accessing /sign-in or /sign-up → Redirect to /home
+    if (userId && REDIRECTS.AUTH_FORBIDDEN.includes(pathname)) {
+      return NextResponse.redirect(new URL(REDIRECTS.AUTHENTICATED, req.url));
+    }
+
+
+    // 3️⃣ Logged in → Role checks
     if (userId) {
+      const publicMetadata = sessionClaims?.publicMetadata as PublicMetadata | undefined;
+      const role = publicMetadata?.role;
 
-      const clerkClientInstance = await clerkClient();
-      const user = await clerkClientInstance.users.getUser(userId);
-      const role = user.publicMetadata.role as string | undefined;
       
-      // Admin role redirection logic
-      if (role === "admin" && pathname === "/dashboard") {
-        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      if (role === "admin" && pathname === "/home") {
+        return NextResponse.redirect(new URL(REDIRECTS.ADMIN_HOME, req.url));
       }
 
-      // Prevent non-admin users from accessing admin routes
+      
       if (role !== "admin" && pathname.startsWith("/admin")) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-
-      // Redirect authenticated users trying to access public routes — except "/"
-      if (isPublicRoute(pathname) && pathname !== "/") {
-        return NextResponse.redirect(
-          new URL(
-            role === "admin" ? "/admin/dashboard" : "/dashboard",
-            req.url
-          )
-        );
+        return NextResponse.redirect(new URL(REDIRECTS.USER_HOME, req.url));
       }
     }
-  } catch (error) {
-    console.error("Error fetching user data from Clerk: ", error);
-    return NextResponse.redirect(new URL("/error", req.url));
-  }
-})
 
+
+
+    // ✅ Allow normal flow
+    return NextResponse.next();
+
+  } catch (error) {
+    console.error("❌ Middleware error:", error);
+    // Avoid showing sensitive info, redirect to error page
+    return NextResponse.redirect(new URL(REDIRECTS.ERROR, req.url));
+  }
+});
 
 
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!.+\\.[\\w]+$|_next|api/webhook/register).*)",
+    "/api/(.*)"
+  ]
 };
