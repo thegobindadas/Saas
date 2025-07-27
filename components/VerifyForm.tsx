@@ -4,8 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Mail } from "lucide-react";
 import BottomGradient from "./ui/BottomGradient";
 import Link from "next/link";
-import Toast from "./Toast";
-import { ToastState } from "@/types";
 
 
 interface VerifyFormProps {
@@ -13,21 +11,17 @@ interface VerifyFormProps {
     email?: string;
     veficationError?: string;
     isLoading?: boolean;
-    toast?: ToastState;
-    setToast: (toast: ToastState) => void;
     resendCode: () => void;
 }
 
 
 
-function VerifyForm(
+export default function VerifyForm(
     {
         handleVerification,
         email,
         veficationError,
         isLoading,
-        toast,
-        setToast,
         resendCode,
     }: VerifyFormProps
 ) {
@@ -158,19 +152,6 @@ function VerifyForm(
 
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4">
-            {/* Custom Toast  */}
-            {toast?.show && (
-                <Toast 
-                    show={toast?.show} 
-                    message={toast?.message} 
-                    type={toast?.type}
-                    onClose={() => {
-                        if (!toast) return;
-                        setToast({ show: false, message: "", type: "success" })
-                    }}
-                /> 
-            )}
             <div className="w-full max-w-md">
                 {/* Main Verification Card */}
                 <div className="bg-gray-900 bg-opacity-50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl">
@@ -280,10 +261,5 @@ function VerifyForm(
                     </p>
                 </div>
             </div>
-        </div>
     );
 }
-
-
-
-export default VerifyForm;

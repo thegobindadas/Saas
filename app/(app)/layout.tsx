@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
 
     const handleLogout = async () => {
-        await signOut();
+        await signOut({ redirectUrl: "/" });
     };
 
 
@@ -60,12 +60,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onLogout={handleLogout}
             />
 
-            <Sidebar
-                user={userData}
-                menuItems={sidebarItems}
-            />
+            {user?.primaryEmailAddress?.emailAddress && 
+                <Sidebar
+                    user={userData}
+                    menuItems={sidebarItems}
+                />
+            }
 
-            <div className="lg:ml-64 pt-16 min-h-screen bg-black">
+            <div className={`pt-10 bg-black ${
+                user?.primaryEmailAddress?.emailAddress ? "pt-15 min-h-screen lg:ml-64" : ""
+            }`}>
                 <div className="p-8">
                     <div className="max-w-6xl mx-auto">
                         {children}
